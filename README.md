@@ -20,6 +20,22 @@ The CSV of transactions is passed directly in the system prompt. Claude analyses
 - "What's my biggest single purchase?"
 - "How much did I spend on transportation vs food?"
 
+## Generative UI — the idea
+
+Traditional apps hardcode their screens. A "spending by category" screen is a SwiftUI file written by a developer, showing exactly the views the developer chose. If you want to answer a different question, you write a new screen.
+
+This app takes a different approach: **the UI itself is the AI's output**.
+
+When you ask "how much did I spend on groceries?", Claude doesn't just return a number — it decides *how that answer should look*. It might choose a large stat card if the answer is a single figure, or a list of transactions if you need details, or a bar chart if comparison is useful. It composes those primitives into a layout, encodes it as JSON, and the app renders it. No developer wrote a "grocery spending screen" — Claude composed it at runtime in response to your specific question.
+
+### Why a DSL instead of free-form output
+
+Claude isn't generating SwiftUI code — it's generating data that describes a layout. The app defines a small vocabulary of node types (`stat`, `card`, `chart`, `list`, etc.) and Claude chooses how to combine them. This keeps rendering safe and predictable: the app only ever executes its own SwiftUI code, never anything from the model. The model's creativity is bounded by the DSL; the app's renderer is fully in control.
+
+### The system prompt as a UI contract
+
+The system prompt tells Claude exactly what nodes exist, what properties each accepts, and what good layouts look like. It also instructs Claude to work only from the provided CSV data and to never invent transactions. This makes Claude both a **data analyst** (filtering and aggregating the CSV) and a **UI designer** (picking the right layout for the answer) in a single pass.
+
 ## Architecture
 
 ### The DSL
