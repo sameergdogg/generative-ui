@@ -2,6 +2,8 @@
 
 An iOS app that answers natural language questions about your transactions by having Claude generate **native SwiftUI layouts on the fly** — no hardcoded screens.
 
+<img src="docs/screenshot.png" width="320" alt="TransactionAI showing grocery spending breakdown with a stat card and transaction list" />
+
 ## How it works
 
 ```
