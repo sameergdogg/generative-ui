@@ -1,0 +1,16 @@
+# Xcode
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+
+# Generated project (regenerate with xcodegen)
+*.xcodeproj/project.pbxproj
+*.xcodeproj/project.xcworkspace/contents.xcworkspacedata
+
+# OS
+.DS_Store
+
+# Secrets
+Secrets.swift
