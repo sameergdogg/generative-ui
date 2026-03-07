@@ -135,13 +135,11 @@ struct ChatMessageView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 16))
                 }
             } else if let uiResponse = message.uiResponse {
-                // Render generative UI
+                // Render generative UI from DSL
                 VStack(alignment: .leading, spacing: 12) {
                     Text(uiResponse.title)
                         .font(.headline)
-                    ForEach(uiResponse.components) { component in
-                        ComponentRenderer(component: component)
-                    }
+                    NodeRenderer(node: uiResponse.layout)
                     Text(uiResponse.spokenSummary)
                         .font(.caption)
                         .foregroundStyle(.secondary)
