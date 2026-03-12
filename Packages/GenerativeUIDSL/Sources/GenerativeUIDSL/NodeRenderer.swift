@@ -1,11 +1,38 @@
 import SwiftUI
 import Charts
+#if canImport(UIKit)
+import UIKit
+#endif
+
+// MARK: - Platform Color Helpers
+
+private enum PlatformColors {
+    static var systemGray5: Color {
+        #if canImport(UIKit)
+        Color(uiColor: .systemGray5)
+        #else
+        Color.gray.opacity(0.2)
+        #endif
+    }
+
+    static var systemGray6: Color {
+        #if canImport(UIKit)
+        Color(uiColor: .systemGray6)
+        #else
+        Color.gray.opacity(0.1)
+        #endif
+    }
+}
 
 /// Recursively renders a UINode tree into native SwiftUI views
-struct NodeRenderer: View {
-    let node: UINode
+public struct NodeRenderer: View {
+    public let node: UINode
 
-    var body: some View {
+    public init(node: UINode) {
+        self.node = node
+    }
+
+    public var body: some View {
         switch node {
         case .vstack(let n):
             vstackView(n)
@@ -21,6 +48,8 @@ struct NodeRenderer: View {
             chartView(n)
         case .list(let n):
             listView(n)
+        case .table(let n):
+            tableView(n)
         case .divider:
             Divider()
         case .spacer:
@@ -125,10 +154,12 @@ struct NodeRenderer: View {
             Text(n.value)
                 .font(isLarge ? .title.bold() : .headline)
                 .foregroundStyle(n.color?.resolvedColor ?? .primary)
+                .minimumScaleFactor(0.6)
+                .lineLimit(1)
         }
         .frame(maxWidth: .infinity)
         .padding()
-        .background(Color(.systemGray6))
+        .background(PlatformColors.systemGray6)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
@@ -162,7 +193,7 @@ struct NodeRenderer: View {
         NodeRenderer(node: n.child)
             .padding(n.padding ?? 16)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(n.color?.resolvedColor.opacity(0.08) ?? Color(.systemGray6))
+            .background(n.color?.resolvedColor.opacity(0.08) ?? PlatformColors.systemGray6)
             .clipShape(RoundedRectangle(cornerRadius: n.cornerRadius ?? 12))
     }
 
@@ -183,7 +214,7 @@ struct NodeRenderer: View {
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color(.systemGray5))
+                        .fill(PlatformColors.systemGray5)
                     RoundedRectangle(cornerRadius: 4)
                         .fill(n.color?.resolvedColor ?? .accentColor)
                         .frame(width: geo.size.width * min(n.value / n.total, 1.0))
@@ -210,7 +241,19 @@ struct NodeRenderer: View {
                         angle: .value(point.label, point.value)
                     )
                     .foregroundStyle(by: .value("Category", point.label))
-                default:
+                case "line":
+                    LineMark(
+                        x: .value("Category", point.label),
+                        y: .value("Amount", point.value)
+                    )
+                    .foregroundStyle(point.color?.resolvedColor ?? .accentColor)
+                    .symbol(Circle())
+                    PointMark(
+                        x: .value("Category", point.label),
+                        y: .value("Amount", point.value)
+                    )
+                    .foregroundStyle(point.color?.resolvedColor ?? .accentColor)
+                default: // "bar" and any other
                     BarMark(
                         x: .value("Category", point.label),
                         y: .value("Amount", point.value)
@@ -233,6 +276,52 @@ struct NodeRenderer: View {
                     .padding(.vertical, 10)
                     .padding(.horizontal, 4)
                 if index < n.items.count - 1 {
+                    Divider()
+                }
+            }
+        }
+    }
+
+    // MARK: - Table View
+
+    @ViewBuilder
+    private func tableView(_ n: TableNode) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if let title = n.title {
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+            }
+            // Header row
+            if !n.headers.isEmpty {
+                HStack(spacing: 0) {
+                    ForEach(Array(n.headers.enumerated()), id: \.offset) { _, header in
+                        Text(header)
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 6)
+                .background(PlatformColors.systemGray6)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+
+                Divider()
+            }
+            // Data rows
+            ForEach(Array(n.rows.enumerated()), id: \.offset) { rowIndex, row in
+                HStack(spacing: 0) {
+                    ForEach(Array(row.enumerated()), id: \.offset) { _, cell in
+                        Text(cell)
+                            .font(.caption)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 6)
+                if rowIndex < n.rows.count - 1 {
                     Divider()
                 }
             }

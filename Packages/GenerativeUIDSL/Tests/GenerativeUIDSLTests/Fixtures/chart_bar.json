@@ -1,0 +1,10 @@
+{
+  "type": "chart",
+  "variant": "bar",
+  "title": "Spending by Category",
+  "data": [
+    {"label": "Food", "value": 120.5, "color": "orange"},
+    {"label": "Transport", "value": 85.0, "color": "blue"},
+    {"label": "Shopping", "value": 210.75, "color": "purple"}
+  ]
+}

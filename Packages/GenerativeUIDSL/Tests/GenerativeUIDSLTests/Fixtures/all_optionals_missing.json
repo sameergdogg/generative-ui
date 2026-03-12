@@ -1,0 +1,16 @@
+{
+  "title": "Minimal Response",
+  "layout": {
+    "type": "vstack",
+    "children": [
+      {"type": "text", "content": "Just text"},
+      {"type": "stat", "label": "Count", "value": "5"},
+      {"type": "image", "system_name": "star"},
+      {"type": "badge", "text": "Tag"},
+      {"type": "progress", "value": 0.5},
+      {"type": "divider"},
+      {"type": "spacer"}
+    ]
+  },
+  "spoken_summary": "Minimal test"
+}

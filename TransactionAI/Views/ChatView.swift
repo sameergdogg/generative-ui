@@ -1,4 +1,5 @@
 import SwiftUI
+import GenerativeUIDSL
 
 struct ChatView: View {
     @State private var messages: [ChatMessage] = []

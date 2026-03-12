@@ -1,10 +1,10 @@
 import Foundation
 
 /// The top-level response from the LLM describing what UI to render
-struct UIResponse: Codable {
-    let title: String
-    let layout: UINode
-    let spokenSummary: String
+public struct UIResponse: Codable {
+    public let title: String
+    public let layout: UINode
+    public let spokenSummary: String
 
     enum CodingKeys: String, CodingKey {
         case title
