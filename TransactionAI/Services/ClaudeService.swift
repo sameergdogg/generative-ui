@@ -2,36 +2,100 @@ import Foundation
 import GenerativeUIDSL
 
 actor ClaudeService {
-    static let shared = ClaudeService(apiKey: Secrets.claudeAPIKey)
+    static let shared = ClaudeService(
+        apiKey: Secrets.claudeAPIKey,
+        transactions: CSVParser.parseTransactions()
+    )
 
     private let apiKey: String
     private let model = "claude-sonnet-4-20250514"
     private let endpoint = URL(string: "https://api.anthropic.com/v1/messages")!
+    private let queryService: TransactionQueryService
 
     /// Maximum number of retry attempts when Claude returns invalid JSON
     private let maxRetries = 2
+    /// Maximum number of tool-use round trips
+    private let maxToolRounds = 10
 
-    init(apiKey: String) {
+    init(apiKey: String, transactions: [Transaction]) {
         self.apiKey = apiKey
+        self.queryService = TransactionQueryService(transactions: transactions)
     }
 
-    func sendQuery(prompt: String, csvContent: String) async throws -> UIResponse {
-        let systemPrompt = buildSystemPrompt(csvContent: csvContent)
+    func sendQuery(prompt: String) async throws -> UIResponse {
+        let systemPrompt = buildSystemPrompt()
+        let tools = Self.buildToolDefinitions()
 
-        // First attempt
-        let jsonString = try await callClaude(systemPrompt: systemPrompt, messages: [
+        // Tool-use conversation loop
+        var messages: [[String: Any]] = [
             ["role": "user", "content": prompt]
-        ])
+        ]
 
-        let cleanJSON = ClaudeService.extractJSON(from: jsonString)
+        for _ in 0..<maxToolRounds {
+            let response = try await callClaude(
+                systemPrompt: systemPrompt,
+                messages: messages,
+                tools: tools
+            )
 
-        // Try to decode, and if it fails, retry with error feedback
-        return try await decodeWithRetry(
-            json: cleanJSON,
-            systemPrompt: systemPrompt,
-            originalPrompt: prompt,
-            attempt: 0
-        )
+            if response.stopReason == "tool_use" {
+                // Extract tool_use blocks and execute them
+                let toolUseBlocks = response.content.filter { $0.type == "tool_use" }
+                guard !toolUseBlocks.isEmpty else {
+                    throw ClaudeError.noContent
+                }
+
+                // Append the full assistant message (with all content blocks)
+                let assistantContent: [[String: Any]] = response.content.map { block in
+                    var dict: [String: Any] = ["type": block.type]
+                    if let text = block.text { dict["text"] = text }
+                    if let id = block.id { dict["id"] = id }
+                    if let name = block.name { dict["name"] = name }
+                    if let input = block.input { dict["input"] = input }
+                    return dict
+                }
+                messages.append(["role": "assistant", "content": assistantContent])
+
+                // Execute each tool and build tool_result blocks
+                var toolResults: [[String: Any]] = []
+                for block in toolUseBlocks {
+                    guard let toolId = block.id, let toolName = block.name else { continue }
+                    let toolInput = block.input ?? [:]
+
+                    let resultContent: String
+                    do {
+                        resultContent = try queryService.executeTool(name: toolName, input: toolInput)
+                    } catch {
+                        resultContent = "{\"error\": \"\(error.localizedDescription)\"}"
+                    }
+
+                    toolResults.append([
+                        "type": "tool_result",
+                        "tool_use_id": toolId,
+                        "content": resultContent
+                    ])
+                }
+
+                messages.append(["role": "user", "content": toolResults])
+            } else {
+                // end_turn — extract text and parse as UI DSL
+                guard let textBlock = response.content.first(where: { $0.type == "text" }),
+                      let jsonString = textBlock.text else {
+                    throw ClaudeError.noContent
+                }
+
+                let cleanJSON = ClaudeService.extractJSON(from: jsonString)
+                return try await decodeWithRetry(
+                    json: cleanJSON,
+                    systemPrompt: systemPrompt,
+                    originalPrompt: prompt,
+                    tools: tools,
+                    attempt: 0
+                )
+            }
+        }
+
+        throw ClaudeError.apiError("Exceeded maximum tool-use rounds (\(maxToolRounds))")
     }
 
     // MARK: - Decode with LLM Error Recovery
@@ -40,53 +104,56 @@ actor ClaudeService {
         json: String,
         systemPrompt: String,
         originalPrompt: String,
+        tools: [[String: Any]],
         attempt: Int
     ) async throws -> UIResponse {
         guard let jsonData = json.data(using: .utf8) else {
             throw ClaudeError.invalidJSON(detail: "Could not convert response to UTF-8 data")
         }
 
-        // Try decoding with diagnostics
         let (response, diagnostics, rawError) = decodeUIResponseWithDiagnostics(from: jsonData)
 
         if let response = response {
-            // Decode succeeded — check if there are issues worth fixing
             if diagnostics.hasIssues && attempt < maxRetries {
-                // Re-prompt Claude to fix the issues
                 let fixPrompt = buildFixPrompt(
                     originalPrompt: originalPrompt,
                     currentJSON: json,
                     diagnostics: diagnostics
                 )
 
-                let fixedJSON = try await callClaude(systemPrompt: systemPrompt, messages: [
-                    ["role": "user", "content": originalPrompt],
-                    ["role": "assistant", "content": json],
-                    ["role": "user", "content": fixPrompt]
-                ])
-
-                let cleanFixed = ClaudeService.extractJSON(from: fixedJSON)
-                return try await decodeWithRetry(
-                    json: cleanFixed,
+                let fixResponse = try await callClaude(
                     systemPrompt: systemPrompt,
-                    originalPrompt: originalPrompt,
-                    attempt: attempt + 1
+                    messages: [
+                        ["role": "user", "content": originalPrompt],
+                        ["role": "assistant", "content": json],
+                        ["role": "user", "content": fixPrompt]
+                    ],
+                    tools: tools
                 )
+
+                if let textBlock = fixResponse.content.first(where: { $0.type == "text" }),
+                   let fixedText = textBlock.text {
+                    let cleanFixed = ClaudeService.extractJSON(from: fixedText)
+                    return try await decodeWithRetry(
+                        json: cleanFixed,
+                        systemPrompt: systemPrompt,
+                        originalPrompt: originalPrompt,
+                        tools: tools,
+                        attempt: attempt + 1
+                    )
+                }
             }
 
-            // Log diagnostics if any, but return the (partially valid) response
             if diagnostics.hasIssues {
                 print("[GenerativeUI] Response decoded with issues: \(diagnostics.summary)")
             }
             return response
         }
 
-        // Full decode failure
         guard attempt < maxRetries else {
             throw ClaudeError.invalidJSON(detail: "Failed after \(maxRetries) retry attempts. Last error: \(rawError?.localizedDescription ?? "unknown")")
         }
 
-        // Build error recovery prompt
         let errorDetail = describeDecodingError(rawError)
         let retryPrompt = buildRetryPrompt(
             originalPrompt: originalPrompt,
@@ -94,30 +161,50 @@ actor ClaudeService {
             errorDetail: errorDetail
         )
 
-        let retriedJSON = try await callClaude(systemPrompt: systemPrompt, messages: [
-            ["role": "user", "content": originalPrompt],
-            ["role": "assistant", "content": json],
-            ["role": "user", "content": retryPrompt]
-        ])
-
-        let cleanRetried = ClaudeService.extractJSON(from: retriedJSON)
-        return try await decodeWithRetry(
-            json: cleanRetried,
+        let retryResponse = try await callClaude(
             systemPrompt: systemPrompt,
-            originalPrompt: originalPrompt,
-            attempt: attempt + 1
+            messages: [
+                ["role": "user", "content": originalPrompt],
+                ["role": "assistant", "content": json],
+                ["role": "user", "content": retryPrompt]
+            ],
+            tools: tools
         )
+
+        if let textBlock = retryResponse.content.first(where: { $0.type == "text" }),
+           let retriedText = textBlock.text {
+            let cleanRetried = ClaudeService.extractJSON(from: retriedText)
+            return try await decodeWithRetry(
+                json: cleanRetried,
+                systemPrompt: systemPrompt,
+                originalPrompt: originalPrompt,
+                tools: tools,
+                attempt: attempt + 1
+            )
+        }
+
+        throw ClaudeError.noContent
     }
 
     // MARK: - Claude API Call
 
-    private func callClaude(systemPrompt: String, messages: [[String: String]]) async throws -> String {
-        let requestBody: [String: Any] = [
+    private func callClaude(
+        systemPrompt: String,
+        messages: [[String: Any]],
+        tools: [[String: Any]]
+    ) async throws -> ClaudeResponse {
+        var requestBody: [String: Any] = [
             "model": model,
-            "max_tokens": 2048,
+            "max_tokens": 4096,
             "system": systemPrompt,
-            "messages": messages
+            "messages": messages,
+            "tools": tools
         ]
+
+        // Only include tools if non-empty
+        if tools.isEmpty {
+            requestBody.removeValue(forKey: "tools")
+        }
 
         var request = URLRequest(url: endpoint)
         request.httpMethod = "POST"
@@ -133,13 +220,158 @@ actor ClaudeService {
             throw ClaudeError.apiError(body)
         }
 
-        let claudeResponse = try JSONDecoder().decode(ClaudeResponse.self, from: data)
-        guard let textBlock = claudeResponse.content.first(where: { $0.type == "text" }),
-              let jsonString = textBlock.text else {
+        // Parse with JSONSerialization since tool_use.input is arbitrary JSON
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let contentArray = json["content"] as? [[String: Any]],
+              let stopReason = json["stop_reason"] as? String else {
             throw ClaudeError.noContent
         }
 
-        return jsonString
+        let blocks = contentArray.map { dict -> ContentBlock in
+            ContentBlock(
+                type: dict["type"] as? String ?? "unknown",
+                text: dict["text"] as? String,
+                id: dict["id"] as? String,
+                name: dict["name"] as? String,
+                input: dict["input"] as? [String: Any]
+            )
+        }
+
+        return ClaudeResponse(content: blocks, stopReason: stopReason)
+    }
+
+    // MARK: - Tool Definitions
+
+    static func buildToolDefinitions() -> [[String: Any]] {
+        [
+            [
+                "name": "filter_transactions",
+                "description": "Search and filter transactions. Returns matching transactions with their details. Use this to find specific transactions by merchant, category, date range, or amount range.",
+                "input_schema": [
+                    "type": "object",
+                    "properties": [
+                        "merchant": [
+                            "type": "string",
+                            "description": "Filter by merchant name (substring match, case-insensitive)"
+                        ],
+                        "category": [
+                            "type": "string",
+                            "description": "Filter by exact category (case-insensitive)"
+                        ],
+                        "payment_method": [
+                            "type": "string",
+                            "description": "Filter by payment method (case-insensitive)"
+                        ],
+                        "date_from": [
+                            "type": "string",
+                            "description": "Start date inclusive (YYYY-MM-DD)"
+                        ],
+                        "date_to": [
+                            "type": "string",
+                            "description": "End date inclusive (YYYY-MM-DD)"
+                        ],
+                        "min_amount": [
+                            "type": "number",
+                            "description": "Minimum transaction amount"
+                        ],
+                        "max_amount": [
+                            "type": "number",
+                            "description": "Maximum transaction amount"
+                        ],
+                        "limit": [
+                            "type": "integer",
+                            "description": "Maximum number of transactions to return (default 20)"
+                        ],
+                        "sort_by": [
+                            "type": "string",
+                            "enum": ["date", "amount", "merchant"],
+                            "description": "Sort field (default: date)"
+                        ],
+                        "sort_order": [
+                            "type": "string",
+                            "enum": ["asc", "desc"],
+                            "description": "Sort order (default: desc)"
+                        ]
+                    ] as [String: Any],
+                    "required": [] as [String]
+                ] as [String: Any]
+            ],
+            [
+                "name": "aggregate_spending",
+                "description": "Compute spending totals, counts, and averages, optionally grouped by category, merchant, payment method, month, or week. Use this for summary statistics and comparisons.",
+                "input_schema": [
+                    "type": "object",
+                    "properties": [
+                        "group_by": [
+                            "type": "string",
+                            "enum": ["category", "merchant", "payment_method", "month", "week"],
+                            "description": "Group results by this field. If omitted, returns a single aggregate over all matching transactions."
+                        ],
+                        "merchant": [
+                            "type": "string",
+                            "description": "Filter by merchant name (substring match)"
+                        ],
+                        "category": [
+                            "type": "string",
+                            "description": "Filter by exact category"
+                        ],
+                        "payment_method": [
+                            "type": "string",
+                            "description": "Filter by payment method"
+                        ],
+                        "date_from": [
+                            "type": "string",
+                            "description": "Start date inclusive (YYYY-MM-DD)"
+                        ],
+                        "date_to": [
+                            "type": "string",
+                            "description": "End date inclusive (YYYY-MM-DD)"
+                        ],
+                        "min_amount": [
+                            "type": "number",
+                            "description": "Minimum amount filter"
+                        ],
+                        "max_amount": [
+                            "type": "number",
+                            "description": "Maximum amount filter"
+                        ],
+                        "limit": [
+                            "type": "integer",
+                            "description": "Limit number of groups returned"
+                        ],
+                        "sort_by_value": [
+                            "type": "boolean",
+                            "description": "Sort groups by total (desc) if true, alphabetically if false. Default: true"
+                        ]
+                    ] as [String: Any],
+                    "required": [] as [String]
+                ] as [String: Any]
+            ],
+            [
+                "name": "list_unique_values",
+                "description": "List all unique values for a given field with their occurrence counts. Use this to discover what categories, merchants, or payment methods exist in the data.",
+                "input_schema": [
+                    "type": "object",
+                    "properties": [
+                        "field": [
+                            "type": "string",
+                            "enum": ["category", "merchant", "payment_method"],
+                            "description": "The field to list unique values for"
+                        ]
+                    ] as [String: Any],
+                    "required": ["field"]
+                ] as [String: Any]
+            ],
+            [
+                "name": "get_date_range",
+                "description": "Get the date range and total count of the transaction dataset. Use this to understand the scope of available data.",
+                "input_schema": [
+                    "type": "object",
+                    "properties": [:] as [String: Any],
+                    "required": [] as [String]
+                ] as [String: Any]
+            ]
+        ]
     }
 
     // MARK: - Error Recovery Prompts
@@ -191,14 +423,16 @@ actor ClaudeService {
 
     // MARK: - System Prompt
 
-    private func buildSystemPrompt(csvContent: String) -> String {
+    private func buildSystemPrompt() -> String {
         """
-        You are a financial data assistant embedded in an iOS app. You generate native UI layouts using a recursive DSL.
+        You are a financial data assistant embedded in an iOS app. You have access to tools \
+        that query the user's transaction data. Use these tools to get the data you need \
+        before generating the UI layout.
 
-        Here is the user's transaction data in CSV format:
-        ```
-        \(csvContent)
-        ```
+        WORKFLOW:
+        1. Use the available tools to query the data you need.
+        2. You may call multiple tools if needed to gather all required data.
+        3. Once you have all the data, respond with ONLY the UIResponse JSON.
 
         You MUST respond with ONLY valid JSON (no markdown, no explanation, no code blocks) matching this schema:
 
@@ -250,7 +484,7 @@ actor ClaudeService {
         - The root layout node should typically be a vstack.
 
         RULES:
-        - ONLY use data from the provided CSV. Never invent transactions.
+        - ONLY use data returned by tool calls. Never invent transactions or numbers.
         - Format currency as whole dollars with no decimals (e.g., "$491" not "$490.55"). Round to the nearest dollar.
         - Format dates as "Mon D, YYYY" (e.g., "Jan 5, 2026").
         - Respond with ONLY the JSON object. No other text.
@@ -279,13 +513,17 @@ actor ClaudeService {
 
 // MARK: - Claude API Response Models
 
-private struct ClaudeResponse: Codable {
+private struct ClaudeResponse {
     let content: [ContentBlock]
+    let stopReason: String
 }
 
-private struct ContentBlock: Codable {
+private struct ContentBlock {
     let type: String
     let text: String?
+    let id: String?
+    let name: String?
+    let input: [String: Any]?
 }
 
 // MARK: - Errors

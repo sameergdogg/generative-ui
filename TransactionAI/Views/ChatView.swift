@@ -91,10 +91,7 @@ struct ChatView: View {
         isLoading = true
 
         do {
-            let response = try await ClaudeService.shared.sendQuery(
-                prompt: text,
-                csvContent: CSVParser.rawCSVContent()
-            )
+            let response = try await ClaudeService.shared.sendQuery(prompt: text)
             let aiMessage = ChatMessage(role: .assistant, text: response.spokenSummary, uiResponse: response)
             messages.append(aiMessage)
         } catch {

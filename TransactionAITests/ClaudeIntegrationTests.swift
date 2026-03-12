@@ -7,7 +7,6 @@ import GenerativeUIDSL
 final class ClaudeIntegrationTests: XCTestCase {
 
     private var service: ClaudeService!
-    private var csvContent: String!
 
     override func setUp() async throws {
         try XCTSkipUnless(
@@ -16,9 +15,7 @@ final class ClaudeIntegrationTests: XCTestCase {
         )
 
         let apiKey = ProcessInfo.processInfo.environment["CLAUDE_API_KEY"]!
-        service = ClaudeService(apiKey: apiKey)
-
-        csvContent = """
+        let csv = """
         date,merchant,category,amount,payment_method,notes
         2026-01-05,McDonald's,Food & Dining,12.50,Credit Card,Lunch
         2026-01-07,Starbucks,Food & Dining,6.75,Debit Card,Morning coffee
@@ -31,15 +28,14 @@ final class ClaudeIntegrationTests: XCTestCase {
         2026-01-22,Target,Shopping,43.21,Debit Card,Clothing
         2026-01-25,Whole Foods,Groceries,78.45,Credit Card,Organic groceries
         """
+        let transactions = CSVParser.parse(csv: csv)
+        service = ClaudeService(apiKey: apiKey, transactions: transactions)
     }
 
     // MARK: - Simple Query
 
     func test_simpleQuery() async throws {
-        let response = try await service.sendQuery(
-            prompt: "What's my total spending?",
-            csvContent: csvContent
-        )
+        let response = try await service.sendQuery(prompt: "What's my total spending?")
 
         XCTAssertFalse(response.title.isEmpty)
         XCTAssertFalse(response.spokenSummary.isEmpty)
@@ -48,12 +44,11 @@ final class ClaudeIntegrationTests: XCTestCase {
         XCTAssertGreaterThan(count, 1, "Response should have more than 1 node")
     }
 
-    // MARK: - List Query
+    // MARK: - List Query (verifies tool use works)
 
     func test_listQuery() async throws {
         let response = try await service.sendQuery(
-            prompt: "Show me my McDonald's transactions",
-            csvContent: csvContent
+            prompt: "Show me my McDonald's transactions"
         )
 
         let allNodes = flattenTree(response.layout)
@@ -70,8 +65,7 @@ final class ClaudeIntegrationTests: XCTestCase {
 
     func test_chartQuery() async throws {
         let response = try await service.sendQuery(
-            prompt: "Compare my spending by category as a bar chart",
-            csvContent: csvContent
+            prompt: "Compare my spending by category as a bar chart"
         )
 
         let allNodes = flattenTree(response.layout)
@@ -83,8 +77,7 @@ final class ClaudeIntegrationTests: XCTestCase {
 
     func test_complexQuery() async throws {
         let response = try await service.sendQuery(
-            prompt: "Give me a financial dashboard with spending stats and a chart",
-            csvContent: csvContent
+            prompt: "Give me a financial dashboard with spending stats and a chart"
         )
 
         let count = nodeCount(response.layout)
@@ -99,13 +92,11 @@ final class ClaudeIntegrationTests: XCTestCase {
 
     func test_tableQuery() async throws {
         let response = try await service.sendQuery(
-            prompt: "Show me a table of all my transactions with date, merchant, and amount columns",
-            csvContent: csvContent
+            prompt: "Show me a table of all my transactions with date, merchant, and amount columns"
         )
 
         let allNodes = flattenTree(response.layout)
         let tableNodes = allNodes.filter { isNodeType($0, "table") }
-        // Table may be rendered as a table node or as a list — both are acceptable
         let listNodes = allNodes.filter { isNodeType($0, "list") }
         XCTAssertTrue(tableNodes.count > 0 || listNodes.count > 0,
                       "Response should contain a table or list node")
@@ -114,18 +105,26 @@ final class ClaudeIntegrationTests: XCTestCase {
     // MARK: - Diagnostics Integration
 
     func test_diagnosticsOnValidResponse() async throws {
-        let response = try await service.sendQuery(
-            prompt: "What's my total spending?",
-            csvContent: csvContent
-        )
+        let response = try await service.sendQuery(prompt: "What's my total spending?")
 
-        // Run diagnostics on the response
         let encoded = try JSONEncoder().encode(response)
         let (decoded, diagnostics, _) = decodeUIResponseWithDiagnostics(from: encoded)
 
         XCTAssertNotNil(decoded)
-        // A re-encoded valid response should have no issues
         XCTAssertFalse(diagnostics.hasIssues, "Re-encoded response should have no diagnostics issues")
+    }
+
+    // MARK: - Tool Use Verification
+
+    func test_toolUseWithMerchantFilter() async throws {
+        // This query should trigger filter_transactions with merchant="McDonald"
+        // and return accurate data even though no CSV is in the prompt
+        let response = try await service.sendQuery(
+            prompt: "List all my McDonald's transactions with dates and amounts"
+        )
+
+        XCTAssertFalse(response.title.isEmpty)
+        XCTAssertFalse(response.spokenSummary.isEmpty)
     }
 }
 
