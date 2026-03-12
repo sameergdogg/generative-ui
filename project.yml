@@ -5,6 +5,10 @@ options:
     iOS: "17.0"
   xcodeVersion: "15.0"
 
+packages:
+  GenerativeUIDSL:
+    path: Packages/GenerativeUIDSL
+
 targets:
   TransactionAI:
     type: application
@@ -16,6 +20,8 @@ targets:
       - path: TransactionAI/Resources/transactions.csv
         type: file
         buildPhase: resources
+    dependencies:
+      - package: GenerativeUIDSL
     settings:
       base:
         INFOPLIST_GENERATION: YES
@@ -24,3 +30,16 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         SWIFT_VERSION: "5.9"
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
+
+  TransactionAITests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: TransactionAITests
+    dependencies:
+      - target: TransactionAI
+      - package: GenerativeUIDSL
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_VERSION: "5.9"

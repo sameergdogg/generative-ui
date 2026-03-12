@@ -1,0 +1,84 @@
+{
+  "title": "McDonald's Spending Summary",
+  "layout": {
+    "type": "vstack",
+    "spacing": 16,
+    "alignment": "leading",
+    "children": [
+      {
+        "type": "hstack",
+        "spacing": 12,
+        "children": [
+          {
+            "type": "stat",
+            "label": "Total Spent",
+            "value": "$21",
+            "color": "red",
+            "size": "large",
+            "icon": "dollarsign.circle"
+          },
+          {
+            "type": "stat",
+            "label": "Transactions",
+            "value": "2",
+            "size": "large",
+            "icon": "list.bullet"
+          }
+        ]
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "card",
+        "color": "orange",
+        "padding": 12,
+        "child": {
+          "type": "vstack",
+          "spacing": 8,
+          "alignment": "leading",
+          "children": [
+            {
+              "type": "hstack",
+              "children": [
+                {"type": "image", "system_name": "fork.knife", "color": "orange"},
+                {"type": "text", "content": "McDonald's Visits", "style": "headline", "weight": "semibold"}
+              ]
+            },
+            {
+              "type": "list",
+              "items": [
+                {
+                  "type": "hstack",
+                  "children": [
+                    {"type": "text", "content": "Jan 5, 2026", "style": "body", "color": "secondary"},
+                    {"type": "spacer"},
+                    {"type": "text", "content": "Lunch", "style": "caption", "color": "secondary"},
+                    {"type": "spacer"},
+                    {"type": "text", "content": "$13", "style": "body", "weight": "semibold", "color": "red"}
+                  ]
+                },
+                {
+                  "type": "hstack",
+                  "children": [
+                    {"type": "text", "content": "Jan 12, 2026", "style": "body", "color": "secondary"},
+                    {"type": "spacer"},
+                    {"type": "text", "content": "Drive-through", "style": "caption", "color": "secondary"},
+                    {"type": "spacer"},
+                    {"type": "text", "content": "$9", "style": "body", "weight": "semibold", "color": "red"}
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "badge",
+        "text": "Food & Dining",
+        "color": "orange"
+      }
+    ]
+  },
+  "spoken_summary": "You spent $21 at McDonald's across 2 transactions in January 2026."
+}

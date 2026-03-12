@@ -1,0 +1,11 @@
+{
+  "type": "chart",
+  "variant": "pie",
+  "title": "Category Breakdown",
+  "data": [
+    {"label": "Groceries", "value": 150.0, "color": "green"},
+    {"label": "Dining", "value": 95.0, "color": "orange"},
+    {"label": "Entertainment", "value": 45.0, "color": "purple"},
+    {"label": "Utilities", "value": 120.0, "color": "blue"}
+  ]
+}

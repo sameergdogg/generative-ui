@@ -1,4 +1,5 @@
 import SwiftUI
+import GenerativeUIDSL
 
 struct ChatView: View {
     @State private var messages: [ChatMessage] = []
@@ -90,10 +91,7 @@ struct ChatView: View {
         isLoading = true
 
         do {
-            let response = try await ClaudeService.shared.sendQuery(
-                prompt: text,
-                csvContent: CSVParser.rawCSVContent()
-            )
+            let response = try await ClaudeService.shared.sendQuery(prompt: text)
             let aiMessage = ChatMessage(role: .assistant, text: response.spokenSummary, uiResponse: response)
             messages.append(aiMessage)
         } catch {
