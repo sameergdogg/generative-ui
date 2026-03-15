@@ -1,0 +1,5 @@
+Card(color=blue, padding=16.0, cornerRadius=12.0, fillsWidth=true)
+  VStack(spacing=8.0, align=leading) [children=3]
+    Text(content="Card Title", style=headline, color=default, weight=bold)
+    Badge(text="Food & Dining", color=orange)
+    Text(content="Some description text", style=body, color=secondary, weight=regular)

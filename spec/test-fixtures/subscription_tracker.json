@@ -1,0 +1,117 @@
+{
+  "title": "Active Subscriptions",
+  "layout": {
+    "type": "vstack",
+    "spacing": 14,
+    "alignment": "leading",
+    "children": [
+      {
+        "type": "hstack",
+        "spacing": 10,
+        "children": [
+          {"type": "stat", "label": "Monthly Total", "value": "$94.86", "color": "purple", "size": "large", "icon": "creditcard"},
+          {"type": "stat", "label": "Services", "value": "7", "size": "large", "icon": "list.bullet"}
+        ]
+      },
+      {
+        "type": "chart",
+        "variant": "pie",
+        "title": "Cost Breakdown",
+        "data": [
+          {"label": "Streaming", "value": 42.97, "color": "red"},
+          {"label": "Cloud", "value": 12.99, "color": "blue"},
+          {"label": "Music", "value": 10.99, "color": "pink"},
+          {"label": "Fitness", "value": 14.99, "color": "green"},
+          {"label": "News", "value": 12.92, "color": "orange"}
+        ]
+      },
+      {"type": "divider"},
+      {
+        "type": "list",
+        "items": [
+          {
+            "type": "hstack",
+            "children": [
+              {"type": "image", "system_name": "play.rectangle.fill", "color": "red"},
+              {
+                "type": "vstack",
+                "spacing": 2,
+                "alignment": "leading",
+                "children": [
+                  {"type": "text", "content": "Netflix Premium", "style": "body", "weight": "medium"},
+                  {"type": "text", "content": "Renews Mar 22", "style": "caption", "color": "secondary"}
+                ]
+              },
+              {"type": "spacer"},
+              {"type": "text", "content": "$22.99", "style": "body", "weight": "semibold"}
+            ]
+          },
+          {
+            "type": "hstack",
+            "children": [
+              {"type": "image", "system_name": "cloud.fill", "color": "blue"},
+              {
+                "type": "vstack",
+                "spacing": 2,
+                "alignment": "leading",
+                "children": [
+                  {"type": "text", "content": "iCloud+ 2TB", "style": "body", "weight": "medium"},
+                  {"type": "text", "content": "Renews Mar 15", "style": "caption", "color": "secondary"}
+                ]
+              },
+              {"type": "spacer"},
+              {"type": "text", "content": "$12.99", "style": "body", "weight": "semibold"}
+            ]
+          },
+          {
+            "type": "hstack",
+            "children": [
+              {"type": "image", "system_name": "music.note", "color": "pink"},
+              {
+                "type": "vstack",
+                "spacing": 2,
+                "alignment": "leading",
+                "children": [
+                  {"type": "text", "content": "Spotify Family", "style": "body", "weight": "medium"},
+                  {"type": "text", "content": "Renews Mar 28", "style": "caption", "color": "secondary"}
+                ]
+              },
+              {"type": "spacer"},
+              {"type": "text", "content": "$16.99", "style": "body", "weight": "semibold"}
+            ]
+          },
+          {
+            "type": "hstack",
+            "children": [
+              {"type": "image", "system_name": "figure.run", "color": "green"},
+              {
+                "type": "vstack",
+                "spacing": 2,
+                "alignment": "leading",
+                "children": [
+                  {"type": "text", "content": "Peloton Digital", "style": "body", "weight": "medium"},
+                  {"type": "text", "content": "Renews Apr 1", "style": "caption", "color": "secondary"}
+                ]
+              },
+              {"type": "spacer"},
+              {"type": "text", "content": "$14.99", "style": "body", "weight": "semibold"}
+            ]
+          }
+        ]
+      },
+      {
+        "type": "card",
+        "color": "purple",
+        "padding": 12,
+        "child": {
+          "type": "hstack",
+          "children": [
+            {"type": "image", "system_name": "info.circle", "color": "purple"},
+            {"type": "text", "content": "You're spending $1,138/year on subscriptions", "style": "subheadline", "weight": "medium"}
+          ]
+        }
+      }
+    ]
+  },
+  "spoken_summary": "You have 7 active subscriptions totaling $94.86 per month, or about $1,138 per year."
+}

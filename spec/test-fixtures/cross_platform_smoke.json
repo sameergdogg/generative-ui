@@ -1,0 +1,161 @@
+{
+  "title": "Cross-Platform Smoke Test",
+  "layout": {
+    "type": "vstack",
+    "spacing": 12,
+    "alignment": "leading",
+    "children": [
+      {
+        "type": "text",
+        "content": "Cross-Platform DSL Demo",
+        "style": "largeTitle",
+        "weight": "bold",
+        "color": "primary"
+      },
+      {
+        "type": "hstack",
+        "spacing": 8,
+        "alignment": "center",
+        "children": [
+          {
+            "type": "image",
+            "system_name": "dollarsign.circle",
+            "color": "green",
+            "size": "large"
+          },
+          {
+            "type": "stat",
+            "label": "Total Balance",
+            "value": "$12,450",
+            "color": "green",
+            "size": "large",
+            "icon": "dollarsign.circle"
+          },
+          {
+            "type": "stat",
+            "label": "Transactions",
+            "value": "47",
+            "size": "large",
+            "icon": "list.bullet"
+          }
+        ]
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "card",
+        "color": "blue",
+        "padding": 16,
+        "cornerRadius": 12,
+        "child": {
+          "type": "vstack",
+          "spacing": 8,
+          "alignment": "leading",
+          "children": [
+            {
+              "type": "text",
+              "content": "Monthly Spending",
+              "style": "headline",
+              "weight": "semibold"
+            },
+            {
+              "type": "progress",
+              "value": 750,
+              "total": 1000,
+              "label": "Budget Used",
+              "color": "blue"
+            },
+            {
+              "type": "badge",
+              "text": "On Track",
+              "color": "green"
+            }
+          ]
+        }
+      },
+      {
+        "type": "chart",
+        "variant": "bar",
+        "title": "Spending by Category",
+        "data": [
+          {"label": "Food", "value": 320.50, "color": "orange"},
+          {"label": "Transport", "value": 150.00, "color": "blue"},
+          {"label": "Shopping", "value": 280.75, "color": "purple"}
+        ]
+      },
+      {
+        "type": "chart",
+        "variant": "pie",
+        "title": "Income Sources",
+        "data": [
+          {"label": "Salary", "value": 5000, "color": "green"},
+          {"label": "Freelance", "value": 1200, "color": "blue"},
+          {"label": "Investments", "value": 800, "color": "purple"}
+        ]
+      },
+      {
+        "type": "chart",
+        "variant": "line",
+        "title": "Weekly Trend",
+        "data": [
+          {"label": "Mon", "value": 45},
+          {"label": "Tue", "value": 82},
+          {"label": "Wed", "value": 35},
+          {"label": "Thu", "value": 120},
+          {"label": "Fri", "value": 95}
+        ]
+      },
+      {
+        "type": "table",
+        "title": "Recent Transactions",
+        "headers": ["Date", "Merchant", "Amount"],
+        "rows": [
+          ["Mar 10", "Starbucks", "$7.50"],
+          ["Mar 9", "Amazon", "$45.99"],
+          ["Mar 8", "Shell Gas", "$52.00"]
+        ]
+      },
+      {
+        "type": "list",
+        "items": [
+          {
+            "type": "hstack",
+            "children": [
+              {"type": "image", "system_name": "fork.knife", "color": "orange"},
+              {"type": "text", "content": "Restaurant spending up 15%", "style": "body"},
+              {"type": "spacer"},
+              {"type": "badge", "text": "+15%", "color": "red"}
+            ]
+          },
+          {
+            "type": "hstack",
+            "children": [
+              {"type": "image", "system_name": "cart.fill", "color": "purple"},
+              {"type": "text", "content": "Shopping within budget", "style": "body"},
+              {"type": "spacer"},
+              {"type": "badge", "text": "OK", "color": "green"}
+            ]
+          }
+        ]
+      },
+      {
+        "type": "zstack",
+        "children": [
+          {"type": "text", "content": "Layered background", "style": "caption", "color": "secondary"},
+          {"type": "text", "content": "Layered foreground", "style": "caption", "color": "primary"}
+        ]
+      },
+      {
+        "type": "spacer"
+      },
+      {
+        "type": "text",
+        "content": "All node types exercised successfully.",
+        "style": "footnote",
+        "color": "secondary"
+      }
+    ]
+  },
+  "spoken_summary": "Cross-platform smoke test showing all 14 node types: vstack, hstack, zstack, text, stat, image, badge, card, progress, chart, list, table, divider, and spacer."
+}

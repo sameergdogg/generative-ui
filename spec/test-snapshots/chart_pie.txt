@@ -1,0 +1,5 @@
+Chart(variant=pie, title=Category Breakdown) [dataPoints=4]
+  DataPoint(label="Groceries", value=150.0, color=green)
+  DataPoint(label="Dining", value=95.0, color=orange)
+  DataPoint(label="Entertainment", value=45.0, color=purple)
+  DataPoint(label="Utilities", value=120.0, color=blue)

@@ -1,0 +1,8 @@
+VStack(spacing=8.0, align=center) [children=7]
+  Text(content="Just text", style=body, color=default, weight=regular)
+  Stat(label="Count", value="5", color=default, size=default, icon=none, fillsWidth=true)
+  Image(name="star", color=default, size=default)
+  Badge(text="Tag", color=default)
+  Progress(value=0.5, total=1.0, label=none, color=default)
+  Divider
+  Spacer

@@ -1,13 +1,25 @@
-# Xcode
+# iOS / Xcode
 *.xcodeproj/xcuserdata/
 *.xcodeproj/project.xcworkspace/xcuserdata/
 *.xcuserstate
 DerivedData/
-build/
-
-# Generated project (regenerate with xcodegen)
 *.xcodeproj/project.pbxproj
 *.xcodeproj/project.xcworkspace/contents.xcworkspacedata
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# Android / Gradle
+*.iml
+.gradle/
+.kotlin/
+**/local.properties
+**/.idea/
+**/build/
+
+# Java
+*.hprof
 
 # OS
 .DS_Store

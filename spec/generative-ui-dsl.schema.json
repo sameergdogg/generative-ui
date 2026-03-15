@@ -1,0 +1,285 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://generative-ui.dev/dsl/v1/schema.json",
+  "title": "Generative UI DSL",
+  "description": "Platform-agnostic schema for LLM-generated UI trees. One JSON schema, native renderers per platform.",
+
+  "$defs": {
+    "UIResponse": {
+      "type": "object",
+      "required": ["title", "layout", "spoken_summary"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Display title for the response"
+        },
+        "layout": {
+          "$ref": "#/$defs/UINode",
+          "description": "Root UI node tree"
+        },
+        "spoken_summary": {
+          "type": "string",
+          "description": "Accessible spoken description of the response"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "UINode": {
+      "type": "object",
+      "required": ["type"],
+      "discriminator": { "propertyName": "type" },
+      "oneOf": [
+        { "$ref": "#/$defs/VStack" },
+        { "$ref": "#/$defs/HStack" },
+        { "$ref": "#/$defs/ZStack" },
+        { "$ref": "#/$defs/Text" },
+        { "$ref": "#/$defs/Stat" },
+        { "$ref": "#/$defs/Image" },
+        { "$ref": "#/$defs/Badge" },
+        { "$ref": "#/$defs/Card" },
+        { "$ref": "#/$defs/Progress" },
+        { "$ref": "#/$defs/Chart" },
+        { "$ref": "#/$defs/List" },
+        { "$ref": "#/$defs/Table" },
+        { "$ref": "#/$defs/Divider" },
+        { "$ref": "#/$defs/Spacer" }
+      ]
+    },
+
+    "VStack": {
+      "type": "object",
+      "required": ["type", "children"],
+      "properties": {
+        "type": { "const": "vstack" },
+        "spacing": { "type": "number", "description": "Points between children" },
+        "alignment": {
+          "type": "string",
+          "enum": ["leading", "center", "trailing"],
+          "description": "Horizontal alignment of children"
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UINode" }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "HStack": {
+      "type": "object",
+      "required": ["type", "children"],
+      "properties": {
+        "type": { "const": "hstack" },
+        "spacing": { "type": "number", "description": "Points between children" },
+        "alignment": {
+          "type": "string",
+          "enum": ["top", "center", "bottom"],
+          "description": "Vertical alignment of children"
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UINode" }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "ZStack": {
+      "type": "object",
+      "required": ["type", "children"],
+      "properties": {
+        "type": { "const": "zstack" },
+        "alignment": {
+          "type": "string",
+          "enum": ["center", "topLeading", "top", "topTrailing", "leading", "trailing", "bottomLeading", "bottom", "bottomTrailing"],
+          "description": "Alignment of overlapping children"
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UINode" }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "Text": {
+      "type": "object",
+      "required": ["type", "content"],
+      "properties": {
+        "type": { "const": "text" },
+        "content": { "type": "string", "description": "Text to display" },
+        "style": {
+          "type": "string",
+          "enum": ["largeTitle", "title", "title2", "title3", "headline", "subheadline", "body", "caption", "caption2", "footnote"],
+          "description": "Typography style"
+        },
+        "color": { "type": "string", "description": "Named color (e.g. 'red', 'primary', 'secondary')" },
+        "weight": {
+          "type": "string",
+          "enum": ["ultraLight", "thin", "light", "regular", "medium", "semibold", "bold", "heavy", "black"],
+          "description": "Font weight"
+        },
+        "maxLines": { "type": "integer", "minimum": 1, "description": "Maximum number of lines before truncation" }
+      },
+      "additionalProperties": false
+    },
+
+    "Stat": {
+      "type": "object",
+      "required": ["type", "label", "value"],
+      "properties": {
+        "type": { "const": "stat" },
+        "label": { "type": "string", "description": "Stat label (e.g. 'Total Spent')" },
+        "value": { "type": "string", "description": "Stat value (e.g. '$491')" },
+        "color": { "type": "string", "description": "Accent color" },
+        "size": {
+          "type": "string",
+          "enum": ["default", "large"],
+          "description": "Display size"
+        },
+        "icon": { "type": "string", "description": "SF Symbol name (snake_case, e.g. 'dollarsign.circle')" }
+      },
+      "additionalProperties": false
+    },
+
+    "Image": {
+      "type": "object",
+      "required": ["type", "system_name"],
+      "properties": {
+        "type": { "const": "image" },
+        "system_name": { "type": "string", "description": "SF Symbol name (e.g. 'cart.fill')" },
+        "color": { "type": "string", "description": "Tint color" },
+        "size": {
+          "type": "string",
+          "enum": ["small", "default", "large", "xlarge"],
+          "description": "Icon size"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "Badge": {
+      "type": "object",
+      "required": ["type", "text"],
+      "properties": {
+        "type": { "const": "badge" },
+        "text": { "type": "string", "description": "Badge label" },
+        "color": { "type": "string", "description": "Badge color" }
+      },
+      "additionalProperties": false
+    },
+
+    "Card": {
+      "type": "object",
+      "required": ["type", "child"],
+      "properties": {
+        "type": { "const": "card" },
+        "color": { "type": "string", "description": "Background tint color" },
+        "padding": { "type": "number", "description": "Inner padding in points" },
+        "cornerRadius": { "type": "number", "description": "Corner radius in points" },
+        "child": { "$ref": "#/$defs/UINode", "description": "Single child node" }
+      },
+      "additionalProperties": false
+    },
+
+    "Progress": {
+      "type": "object",
+      "required": ["type", "value"],
+      "properties": {
+        "type": { "const": "progress" },
+        "value": { "type": "number", "description": "Current value" },
+        "total": { "type": "number", "default": 1.0, "description": "Maximum value (defaults to 1.0)" },
+        "label": { "type": "string", "description": "Label above the progress bar" },
+        "color": { "type": "string", "description": "Bar fill color" }
+      },
+      "additionalProperties": false
+    },
+
+    "Chart": {
+      "type": "object",
+      "required": ["type", "variant", "data"],
+      "properties": {
+        "type": { "const": "chart" },
+        "variant": {
+          "type": "string",
+          "enum": ["bar", "pie", "line"],
+          "description": "Chart type"
+        },
+        "title": { "type": "string", "description": "Chart title" },
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ChartDataPoint" }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "ChartDataPoint": {
+      "type": "object",
+      "required": ["label", "value"],
+      "properties": {
+        "label": { "type": "string" },
+        "value": { "type": "number" },
+        "color": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "List": {
+      "type": "object",
+      "required": ["type", "items"],
+      "properties": {
+        "type": { "const": "list" },
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UINode" }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "Table": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "const": "table" },
+        "title": { "type": "string", "description": "Table title" },
+        "headers": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Column headers"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "description": "Row data (array of arrays)"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "Divider": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "const": "divider" }
+      },
+      "additionalProperties": false
+    },
+
+    "Spacer": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "const": "spacer" }
+      },
+      "additionalProperties": false
+    }
+  },
+
+  "$ref": "#/$defs/UIResponse"
+}

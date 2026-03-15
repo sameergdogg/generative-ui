@@ -1,0 +1,143 @@
+{
+  "title": "March Budget Status",
+  "layout": {
+    "type": "vstack",
+    "spacing": 14,
+    "alignment": "leading",
+    "children": [
+      {
+        "type": "card",
+        "color": "blue",
+        "padding": 16,
+        "child": {
+          "type": "vstack",
+          "spacing": 10,
+          "alignment": "leading",
+          "children": [
+            {
+              "type": "hstack",
+              "children": [
+                {"type": "text", "content": "Overall Budget", "style": "headline", "weight": "bold"},
+                {"type": "spacer"},
+                {"type": "badge", "text": "13 days left", "color": "blue"}
+              ]
+            },
+            {"type": "progress", "value": 3180, "total": 5000, "label": "Spent $3,180 of $5,000", "color": "blue"},
+            {"type": "text", "content": "$1,820 remaining", "style": "title2", "weight": "bold", "color": "green"}
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Category Budgets",
+        "style": "headline",
+        "weight": "semibold"
+      },
+      {
+        "type": "card",
+        "padding": 12,
+        "child": {
+          "type": "vstack",
+          "spacing": 12,
+          "alignment": "leading",
+          "children": [
+            {
+              "type": "vstack",
+              "spacing": 4,
+              "alignment": "leading",
+              "children": [
+                {
+                  "type": "hstack",
+                  "children": [
+                    {"type": "image", "system_name": "house.fill", "color": "blue"},
+                    {"type": "text", "content": "Housing", "style": "body", "weight": "medium"},
+                    {"type": "spacer"},
+                    {"type": "text", "content": "$1,800 / $1,800", "style": "caption", "color": "secondary"}
+                  ]
+                },
+                {"type": "progress", "value": 1800, "total": 1800, "color": "blue"}
+              ]
+            },
+            {
+              "type": "vstack",
+              "spacing": 4,
+              "alignment": "leading",
+              "children": [
+                {
+                  "type": "hstack",
+                  "children": [
+                    {"type": "image", "system_name": "fork.knife", "color": "orange"},
+                    {"type": "text", "content": "Food & Dining", "style": "body", "weight": "medium"},
+                    {"type": "spacer"},
+                    {"type": "text", "content": "$620 / $800", "style": "caption", "color": "secondary"}
+                  ]
+                },
+                {"type": "progress", "value": 620, "total": 800, "color": "orange"}
+              ]
+            },
+            {
+              "type": "vstack",
+              "spacing": 4,
+              "alignment": "leading",
+              "children": [
+                {
+                  "type": "hstack",
+                  "children": [
+                    {"type": "image", "system_name": "car.fill", "color": "purple"},
+                    {"type": "text", "content": "Transport", "style": "body", "weight": "medium"},
+                    {"type": "spacer"},
+                    {"type": "text", "content": "$380 / $400", "style": "caption", "color": "secondary"}
+                  ]
+                },
+                {"type": "progress", "value": 380, "total": 400, "color": "purple"}
+              ]
+            },
+            {
+              "type": "vstack",
+              "spacing": 4,
+              "alignment": "leading",
+              "children": [
+                {
+                  "type": "hstack",
+                  "children": [
+                    {"type": "image", "system_name": "cart.fill", "color": "pink"},
+                    {"type": "text", "content": "Shopping", "style": "body", "weight": "medium"},
+                    {"type": "spacer"},
+                    {"type": "text", "content": "$280 / $500", "style": "caption", "color": "secondary"}
+                  ]
+                },
+                {"type": "progress", "value": 280, "total": 500, "color": "pink"}
+              ]
+            },
+            {
+              "type": "vstack",
+              "spacing": 4,
+              "alignment": "leading",
+              "children": [
+                {
+                  "type": "hstack",
+                  "children": [
+                    {"type": "image", "system_name": "heart.fill", "color": "green"},
+                    {"type": "text", "content": "Health & Fitness", "style": "body", "weight": "medium"},
+                    {"type": "spacer"},
+                    {"type": "text", "content": "$100 / $300", "style": "caption", "color": "secondary"}
+                  ]
+                },
+                {"type": "progress", "value": 100, "total": 300, "color": "green"}
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "hstack",
+        "children": [
+          {"type": "badge", "text": "Housing: at limit", "color": "red"},
+          {"type": "badge", "text": "Transport: 95%", "color": "orange"},
+          {"type": "badge", "text": "Shopping: on track", "color": "green"}
+        ]
+      }
+    ]
+  },
+  "spoken_summary": "You've spent $3,180 of your $5,000 March budget with 13 days remaining. Housing is at its limit and transport is at 95%."
+}

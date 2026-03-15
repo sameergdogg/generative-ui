@@ -1,56 +1,55 @@
-# TransactionAI — Generative UI Prototype
+# Generative UI DSL
 
-An iOS app that answers natural language questions about your transactions by having Claude generate **native SwiftUI layouts on the fly** — no hardcoded screens.
+A cross-platform framework for rendering AI-generated native UI from JSON. Claude (or any LLM) returns a recursive layout tree — the framework walks it and renders real **SwiftUI** or **Jetpack Compose** views. No hardcoded screens.
 
-<img src="docs/screenshot.png" width="320" alt="TransactionAI showing grocery spending breakdown with a stat card and transaction list" />
+<p align="center">
+  <img src="screenshots/comparison_financial_dashboard.png" width="700" alt="Same JSON rendered natively on iOS and Android" />
+</p>
 
 ## How it works
 
 ```
-User prompt → Claude API → JSON UINode tree → SwiftUI renderer
+User prompt → LLM → JSON UINode tree → Native renderer (SwiftUI / Compose)
 ```
 
-The CSV of transactions is passed directly in the system prompt. Claude analyses the question, picks the right data, and returns a recursive `UINode` layout tree. The app walks that tree and renders real SwiftUI views.
+The LLM analyses a question, picks the right data, and returns a recursive `UINode` layout tree. The platform-specific renderer walks that tree and produces native views. Both platforms consume the **same JSON format** and produce visually equivalent output.
 
-## Demo questions to try
+## Project structure
 
-- "How much did I spend this month?"
-- "Compare my spending by category"
-- "Show me all food & dining transactions"
-- "What's my biggest single purchase?"
-- "How much did I spend on transportation vs food?"
+```
+generative-ui/
+├── Package.swift                    # Root SPM manifest (for git URL consumption)
+├── spec/                            # Shared DSL contract
+│   ├── generative-ui-dsl.schema.json
+│   ├── icon-map.json
+│   ├── test-fixtures/               # 17 JSON test inputs
+│   └── test-snapshots/              # Golden render snapshots
+├── packages/
+│   ├── ios/                         # Swift Package — GenerativeUIDSL
+│   │   ├── Sources/GenerativeUIDSL/
+│   │   └── Tests/GenerativeUIDSLTests/
+│   └── android/                     # Gradle library — com.generativeui:dsl
+│       ├── build.gradle.kts
+│       └── src/
+├── examples/
+│   └── android-sample/              # Android demo app (Jetpack Compose)
+└── screenshots/                     # Cross-platform comparison images
+```
 
-## Generative UI — the idea
+## The DSL
 
-Traditional apps hardcode their screens. A "spending by category" screen is a SwiftUI file written by a developer, showing exactly the views the developer chose. If you want to answer a different question, you write a new screen.
+The LLM responds with a `layout` field containing a recursive node tree:
 
-This app takes a different approach: **the UI itself is the AI's output**.
-
-When you ask "how much did I spend on groceries?", Claude doesn't just return a number — it decides *how that answer should look*. It might choose a large stat card if the answer is a single figure, or a list of transactions if you need details, or a bar chart if comparison is useful. It composes those primitives into a layout, encodes it as JSON, and the app renders it. No developer wrote a "grocery spending screen" — Claude composed it at runtime in response to your specific question.
-
-### Why a DSL instead of free-form output
-
-Claude isn't generating SwiftUI code — it's generating data that describes a layout. The app defines a small vocabulary of node types (`stat`, `card`, `chart`, `list`, etc.) and Claude chooses how to combine them. This keeps rendering safe and predictable: the app only ever executes its own SwiftUI code, never anything from the model. The model's creativity is bounded by the DSL; the app's renderer is fully in control.
-
-### The system prompt as a UI contract
-
-The system prompt tells Claude exactly what nodes exist, what properties each accepts, and what good layouts look like. It also instructs Claude to work only from the provided CSV data and to never invent transactions. This makes Claude both a **data analyst** (filtering and aggregating the CSV) and a **UI designer** (picking the right layout for the answer) in a single pass.
-
-## Architecture
-
-### The DSL
-
-Claude responds with a single `layout` field containing a recursive node tree. Available node types:
-
-| Category | Types |
-|----------|-------|
-| Layout | `vstack`, `hstack`, `zstack` |
-| Content | `text`, `stat`, `image`, `badge`, `progress` |
-| Container | `card`, `list` |
-| Data viz | `chart` (bar or pie) |
-| Utility | `divider`, `spacer` |
+| Category   | Types                                  |
+|------------|----------------------------------------|
+| Layout     | `vstack`, `hstack`, `zstack`           |
+| Content    | `text`, `stat`, `image`, `badge`, `progress` |
+| Container  | `card`, `list`                         |
+| Data viz   | `chart` (bar, pie, line), `table`      |
+| Utility    | `divider`, `spacer`                    |
 
 Example response:
+
 ```json
 {
   "title": "Food Spending",
@@ -69,43 +68,76 @@ Example response:
 }
 ```
 
-### Key files
+## Cross-platform parity
 
+Both renderers produce structurally identical output from the same JSON. This is verified by **render snapshot tests** — a canonical text description of each node tree that must match byte-for-byte across platforms.
+
+<p align="center">
+  <img src="screenshots/comparison_claude_response.png" width="600" />
+  <img src="screenshots/comparison_subscriptions.png" width="600" />
+  <img src="screenshots/comparison_budget_status.png" width="600" />
+</p>
+
+## Installation
+
+### iOS (Swift Package Manager)
+
+Add to your `Package.swift`:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/sameergdogg/generative-ui.git", branch: "main")
+]
 ```
-TransactionAI/
-├── Models/
-│   ├── UINode.swift          # Recursive DSL node types + Codable
-│   ├── UIResponse.swift      # Top-level LLM response envelope
-│   └── Transaction.swift     # CSV row model
-├── Services/
-│   ├── ClaudeService.swift   # Claude API call + system prompt
-│   └── CSVParser.swift       # Loads transactions.csv
-├── Views/
-│   ├── ChatView.swift        # Chat UI, message history
-│   ├── PromptInputView.swift # Text field + send button
-│   └── Components/
-│       └── NodeRenderer.swift # Recursively renders UINode → SwiftUI
-└── Resources/
-    └── transactions.csv
+
+Then import and use:
+
+```swift
+import GenerativeUIDSL
+
+let response = try JSONDecoder().decode(UIResponse.self, from: jsonData)
+NodeRenderer(node: response.layout)
 ```
 
-## Setup
+### Android (Gradle)
 
-**Requirements:** Xcode 15+, iOS 17+, an Anthropic API key
+The library is at `packages/android/`. Add it via composite build or publish to Maven:
 
-1. Clone the repo
-2. Copy the secrets file and add your key:
-   ```
-   cp TransactionAI/Services/Secrets.swift.example TransactionAI/Services/Secrets.swift
-   ```
-   Then edit `Secrets.swift` and replace `"your-api-key-here"` with your key.
-3. Open `TransactionAI.xcodeproj` in Xcode
-4. Select a simulator or device and run
+```kotlin
+// settings.gradle.kts
+includeBuild("path/to/generative-ui/packages/android") {
+    dependencySubstitution {
+        substitute(module("com.generativeui:dsl")).using(project(":"))
+    }
+}
 
-> **Note:** `Secrets.swift` is gitignored. Never commit your API key.
+// app/build.gradle.kts
+dependencies {
+    implementation("com.generativeui:dsl")
+}
+```
 
-## Transaction data
+Then use:
 
-The app ships with a sample `transactions.csv` covering ~30 transactions across categories like Food & Dining, Transportation, Entertainment, and Shopping. You can replace it with your own data — the CSV is passed verbatim to Claude, so keep it under ~100 rows for best performance.
+```kotlin
+import com.generativeui.dsl.render.NodeRenderer
 
-Expected columns: `date`, `merchant`, `category`, `amount`, `payment_method`, `notes`
+val response = Json.decodeFromString<UIResponse>(jsonString)
+NodeRenderer(response.layout)
+```
+
+## Running tests
+
+```bash
+# iOS
+swift test
+
+# Android
+cd packages/android
+gradle test
+```
+
+## Example apps
+
+- **[Expenses-AI](https://github.com/sameergdogg/Expenses-AI)** — iOS app using Claude to generate expense analysis UI
+- **Android sample** — `examples/android-sample/` in this repo

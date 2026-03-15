@@ -1,0 +1,24 @@
+{
+  "type": "vstack",
+  "children": [
+    {"type": "vstack", "children": [
+      {"type": "vstack", "children": [
+        {"type": "vstack", "children": [
+          {"type": "vstack", "children": [
+            {"type": "vstack", "children": [
+              {"type": "vstack", "children": [
+                {"type": "vstack", "children": [
+                  {"type": "vstack", "children": [
+                    {"type": "vstack", "children": [
+                      {"type": "text", "content": "Deep leaf"}
+                    ]}
+                  ]}
+                ]}
+              ]}
+            ]}
+          ]}
+        ]}
+      ]}
+    ]}
+  ]
+}

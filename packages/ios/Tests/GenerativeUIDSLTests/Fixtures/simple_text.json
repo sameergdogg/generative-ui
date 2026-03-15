@@ -1,0 +1,7 @@
+{
+  "type": "text",
+  "content": "Hello World",
+  "style": "title",
+  "color": "blue",
+  "weight": "bold"
+}

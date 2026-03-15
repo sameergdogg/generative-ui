@@ -1,0 +1,22 @@
+VStack(spacing=14.0, align=leading) [children=5]
+  HStack(spacing=10.0, align=center, fillsWidth=true) [children=2]
+    Image(name="cart.fill", color=green, size=large)
+    VStack(spacing=2.0, align=leading) [children=2]
+      Text(content="Total Grocery Spend", style=subheadline, color=secondary, weight=regular)
+      Text(content="$847.32", style=title, color=green, weight=bold)
+  Divider
+  Chart(variant=pie, title=By Store) [dataPoints=4]
+    DataPoint(label="Whole Foods", value=342.1, color=green)
+    DataPoint(label="Trader Joe's", value=218.5, color=orange)
+    DataPoint(label="Costco", value=186.72, color=blue)
+    DataPoint(label="Target", value=100.0, color=red)
+  Table(title=Top Purchases, headers=["Item", "Store", "Price"]) [rows=5]
+    Row(["Organic Salmon", "Whole Foods", "$24.99"])
+    Row(["Olive Oil (2L)", "Costco", "$18.49"])
+    Row(["Almond Milk x6", "Trader Joe's", "$15.94"])
+    Row(["Avocados (bag)", "Costco", "$9.99"])
+    Row(["Sourdough Bread", "Whole Foods", "$7.50"])
+  Card(color=orange, padding=12.0, cornerRadius=12.0, fillsWidth=true)
+    HStack(spacing=8.0, align=center, fillsWidth=true) [children=2]
+      Image(name="exclamationmark.triangle", color=orange, size=default)
+      Text(content="Grocery spending is 12% over your $750 monthly budget", style=subheadline, color=default, weight=medium)
