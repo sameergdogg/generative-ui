@@ -1,0 +1,4 @@
+VStack(spacing=12.0, align=leading) [children=3]
+  Text(content="First", style=headline, color=default, weight=regular)
+  Text(content="Second", style=body, color=default, weight=regular)
+  Text(content="Third", style=caption, color=default, weight=regular)

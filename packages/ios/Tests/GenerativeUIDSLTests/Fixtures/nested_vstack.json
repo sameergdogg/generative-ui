@@ -1,0 +1,10 @@
+{
+  "type": "vstack",
+  "spacing": 12,
+  "alignment": "leading",
+  "children": [
+    {"type": "text", "content": "First", "style": "headline"},
+    {"type": "text", "content": "Second", "style": "body"},
+    {"type": "text", "content": "Third", "style": "caption"}
+  ]
+}

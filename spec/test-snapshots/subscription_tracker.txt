@@ -1,0 +1,44 @@
+VStack(spacing=14.0, align=leading) [children=5]
+  HStack(spacing=10.0, align=center, fillsWidth=true) [children=2]
+    Stat(label="Monthly Total", value="$94.86", color=purple, size=large, icon=creditcard, fillsWidth=true, weighted=true)
+    Stat(label="Services", value="7", color=default, size=large, icon=list.bullet, fillsWidth=true, weighted=true)
+  Chart(variant=pie, title=Cost Breakdown) [dataPoints=5]
+    DataPoint(label="Streaming", value=42.97, color=red)
+    DataPoint(label="Cloud", value=12.99, color=blue)
+    DataPoint(label="Music", value=10.99, color=pink)
+    DataPoint(label="Fitness", value=14.99, color=green)
+    DataPoint(label="News", value=12.92, color=orange)
+  Divider
+  List [items=4]
+    HStack(spacing=8.0, align=center, fillsWidth=true) [children=4]
+      Image(name="play.rectangle.fill", color=red, size=default)
+      VStack(spacing=2.0, align=leading) [children=2]
+        Text(content="Netflix Premium", style=body, color=default, weight=medium)
+        Text(content="Renews Mar 22", style=caption, color=secondary, weight=regular)
+      Spacer(weighted=true)
+      Text(content="$22.99", style=body, color=default, weight=semibold)
+    HStack(spacing=8.0, align=center, fillsWidth=true) [children=4]
+      Image(name="cloud.fill", color=blue, size=default)
+      VStack(spacing=2.0, align=leading) [children=2]
+        Text(content="iCloud+ 2TB", style=body, color=default, weight=medium)
+        Text(content="Renews Mar 15", style=caption, color=secondary, weight=regular)
+      Spacer(weighted=true)
+      Text(content="$12.99", style=body, color=default, weight=semibold)
+    HStack(spacing=8.0, align=center, fillsWidth=true) [children=4]
+      Image(name="music.note", color=pink, size=default)
+      VStack(spacing=2.0, align=leading) [children=2]
+        Text(content="Spotify Family", style=body, color=default, weight=medium)
+        Text(content="Renews Mar 28", style=caption, color=secondary, weight=regular)
+      Spacer(weighted=true)
+      Text(content="$16.99", style=body, color=default, weight=semibold)
+    HStack(spacing=8.0, align=center, fillsWidth=true) [children=4]
+      Image(name="figure.run", color=green, size=default)
+      VStack(spacing=2.0, align=leading) [children=2]
+        Text(content="Peloton Digital", style=body, color=default, weight=medium)
+        Text(content="Renews Apr 1", style=caption, color=secondary, weight=regular)
+      Spacer(weighted=true)
+      Text(content="$14.99", style=body, color=default, weight=semibold)
+  Card(color=purple, padding=12.0, cornerRadius=12.0, fillsWidth=true)
+    HStack(spacing=8.0, align=center, fillsWidth=true) [children=2]
+      Image(name="info.circle", color=purple, size=default)
+      Text(content="You're spending $1,138/year on subscriptions", style=subheadline, color=default, weight=medium)

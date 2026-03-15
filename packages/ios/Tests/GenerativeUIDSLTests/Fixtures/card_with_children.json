@@ -1,0 +1,16 @@
+{
+  "type": "card",
+  "color": "blue",
+  "padding": 16,
+  "cornerRadius": 12,
+  "child": {
+    "type": "vstack",
+    "spacing": 8,
+    "alignment": "leading",
+    "children": [
+      {"type": "text", "content": "Card Title", "style": "headline", "weight": "bold"},
+      {"type": "badge", "text": "Food & Dining", "color": "orange"},
+      {"type": "text", "content": "Some description text", "style": "body", "color": "secondary"}
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+VStack(spacing=16.0, align=leading) [children=4]
+  HStack(spacing=12.0, align=center, fillsWidth=true) [children=2]
+    Stat(label="Total Spent", value="$21", color=red, size=large, icon=dollarsign.circle, fillsWidth=true, weighted=true)
+    Stat(label="Transactions", value="2", color=default, size=large, icon=list.bullet, fillsWidth=true, weighted=true)
+  Divider
+  Card(color=orange, padding=12.0, cornerRadius=12.0, fillsWidth=true)
+    VStack(spacing=8.0, align=leading) [children=2]
+      HStack(spacing=8.0, align=center, fillsWidth=true) [children=2]
+        Image(name="fork.knife", color=orange, size=default)
+        Text(content="McDonald's Visits", style=headline, color=default, weight=semibold)
+      List [items=2]
+        HStack(spacing=8.0, align=center, fillsWidth=true) [children=5]
+          Text(content="Jan 5, 2026", style=body, color=secondary, weight=regular)
+          Spacer(weighted=true)
+          Text(content="Lunch", style=caption, color=secondary, weight=regular)
+          Spacer(weighted=true)
+          Text(content="$13", style=body, color=red, weight=semibold)
+        HStack(spacing=8.0, align=center, fillsWidth=true) [children=5]
+          Text(content="Jan 12, 2026", style=body, color=secondary, weight=regular)
+          Spacer(weighted=true)
+          Text(content="Drive-through", style=caption, color=secondary, weight=regular)
+          Spacer(weighted=true)
+          Text(content="$9", style=body, color=red, weight=semibold)
+  Badge(text="Food & Dining", color=orange)

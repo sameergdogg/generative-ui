@@ -1,0 +1,4 @@
+Chart(variant=bar, title=Spending by Category) [dataPoints=3]
+  DataPoint(label="Food", value=120.5, color=orange)
+  DataPoint(label="Transport", value=85.0, color=blue)
+  DataPoint(label="Shopping", value=210.75, color=purple)

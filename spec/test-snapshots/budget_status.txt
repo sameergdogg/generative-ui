@@ -1,0 +1,51 @@
+VStack(spacing=14.0, align=leading) [children=4]
+  Card(color=blue, padding=16.0, cornerRadius=12.0, fillsWidth=true)
+    VStack(spacing=10.0, align=leading) [children=3]
+      HStack(spacing=8.0, align=center, fillsWidth=true) [children=3]
+        Text(content="Overall Budget", style=headline, color=default, weight=bold)
+        Spacer(weighted=true)
+        Badge(text="13 days left", color=blue)
+      Progress(value=3180.0, total=5000.0, label=Spent $3,180 of $5,000, color=blue)
+      Text(content="$1,820 remaining", style=title2, color=green, weight=bold)
+  Text(content="Category Budgets", style=headline, color=default, weight=semibold)
+  Card(color=default, padding=12.0, cornerRadius=12.0, fillsWidth=true)
+    VStack(spacing=12.0, align=leading) [children=5]
+      VStack(spacing=4.0, align=leading) [children=2]
+        HStack(spacing=8.0, align=center, fillsWidth=true) [children=4]
+          Image(name="house.fill", color=blue, size=default)
+          Text(content="Housing", style=body, color=default, weight=medium)
+          Spacer(weighted=true)
+          Text(content="$1,800 / $1,800", style=caption, color=secondary, weight=regular)
+        Progress(value=1800.0, total=1800.0, label=none, color=blue)
+      VStack(spacing=4.0, align=leading) [children=2]
+        HStack(spacing=8.0, align=center, fillsWidth=true) [children=4]
+          Image(name="fork.knife", color=orange, size=default)
+          Text(content="Food & Dining", style=body, color=default, weight=medium)
+          Spacer(weighted=true)
+          Text(content="$620 / $800", style=caption, color=secondary, weight=regular)
+        Progress(value=620.0, total=800.0, label=none, color=orange)
+      VStack(spacing=4.0, align=leading) [children=2]
+        HStack(spacing=8.0, align=center, fillsWidth=true) [children=4]
+          Image(name="car.fill", color=purple, size=default)
+          Text(content="Transport", style=body, color=default, weight=medium)
+          Spacer(weighted=true)
+          Text(content="$380 / $400", style=caption, color=secondary, weight=regular)
+        Progress(value=380.0, total=400.0, label=none, color=purple)
+      VStack(spacing=4.0, align=leading) [children=2]
+        HStack(spacing=8.0, align=center, fillsWidth=true) [children=4]
+          Image(name="cart.fill", color=pink, size=default)
+          Text(content="Shopping", style=body, color=default, weight=medium)
+          Spacer(weighted=true)
+          Text(content="$280 / $500", style=caption, color=secondary, weight=regular)
+        Progress(value=280.0, total=500.0, label=none, color=pink)
+      VStack(spacing=4.0, align=leading) [children=2]
+        HStack(spacing=8.0, align=center, fillsWidth=true) [children=4]
+          Image(name="heart.fill", color=green, size=default)
+          Text(content="Health & Fitness", style=body, color=default, weight=medium)
+          Spacer(weighted=true)
+          Text(content="$100 / $300", style=caption, color=secondary, weight=regular)
+        Progress(value=100.0, total=300.0, label=none, color=green)
+  HStack(spacing=8.0, align=center, fillsWidth=true) [children=3]
+    Badge(text="Housing: at limit", color=red)
+    Badge(text="Transport: 95%", color=orange)
+    Badge(text="Shopping: on track", color=green)

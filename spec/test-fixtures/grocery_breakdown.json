@@ -1,0 +1,63 @@
+{
+  "title": "Grocery Spending Breakdown",
+  "layout": {
+    "type": "vstack",
+    "spacing": 14,
+    "alignment": "leading",
+    "children": [
+      {
+        "type": "hstack",
+        "spacing": 10,
+        "children": [
+          {"type": "image", "system_name": "cart.fill", "color": "green", "size": "large"},
+          {
+            "type": "vstack",
+            "spacing": 2,
+            "alignment": "leading",
+            "children": [
+              {"type": "text", "content": "Total Grocery Spend", "style": "subheadline", "color": "secondary"},
+              {"type": "text", "content": "$847.32", "style": "title", "weight": "bold", "color": "green"}
+            ]
+          }
+        ]
+      },
+      {"type": "divider"},
+      {
+        "type": "chart",
+        "variant": "pie",
+        "title": "By Store",
+        "data": [
+          {"label": "Whole Foods", "value": 342.10, "color": "green"},
+          {"label": "Trader Joe's", "value": 218.50, "color": "orange"},
+          {"label": "Costco", "value": 186.72, "color": "blue"},
+          {"label": "Target", "value": 100.00, "color": "red"}
+        ]
+      },
+      {
+        "type": "table",
+        "title": "Top Purchases",
+        "headers": ["Item", "Store", "Price"],
+        "rows": [
+          ["Organic Salmon", "Whole Foods", "$24.99"],
+          ["Olive Oil (2L)", "Costco", "$18.49"],
+          ["Almond Milk x6", "Trader Joe's", "$15.94"],
+          ["Avocados (bag)", "Costco", "$9.99"],
+          ["Sourdough Bread", "Whole Foods", "$7.50"]
+        ]
+      },
+      {
+        "type": "card",
+        "color": "orange",
+        "padding": 12,
+        "child": {
+          "type": "hstack",
+          "children": [
+            {"type": "image", "system_name": "exclamationmark.triangle", "color": "orange"},
+            {"type": "text", "content": "Grocery spending is 12% over your $750 monthly budget", "style": "subheadline", "weight": "medium"}
+          ]
+        }
+      }
+    ]
+  },
+  "spoken_summary": "You spent $847.32 on groceries this month across 4 stores, which is 12% over your $750 budget."
+}

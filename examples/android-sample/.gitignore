@@ -1,0 +1,8 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+/build
+/generative-ui-dsl/build
+/sample-app/build
+.DS_Store

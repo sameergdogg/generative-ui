@@ -1,0 +1,55 @@
+{
+  "title": "January Financial Dashboard",
+  "layout": {
+    "type": "vstack",
+    "spacing": 16,
+    "alignment": "leading",
+    "children": [
+      {
+        "type": "hstack",
+        "spacing": 10,
+        "children": [
+          {"type": "stat", "label": "Income", "value": "$8,450", "color": "green", "size": "large", "icon": "arrow.up.right"},
+          {"type": "stat", "label": "Expenses", "value": "$5,230", "color": "red", "size": "large", "icon": "arrow.down.right"},
+          {"type": "stat", "label": "Saved", "value": "$3,220", "color": "blue", "size": "large", "icon": "dollarsign.circle"}
+        ]
+      },
+      {
+        "type": "card",
+        "color": "green",
+        "padding": 14,
+        "child": {
+          "type": "vstack",
+          "spacing": 8,
+          "alignment": "leading",
+          "children": [
+            {"type": "text", "content": "Savings Goal: Vacation Fund", "style": "headline", "weight": "semibold"},
+            {"type": "progress", "value": 3220, "total": 5000, "label": "Progress", "color": "green"},
+            {
+              "type": "hstack",
+              "children": [
+                {"type": "badge", "text": "$3,220 saved", "color": "green"},
+                {"type": "spacer"},
+                {"type": "text", "content": "$1,780 to go", "style": "caption", "color": "secondary"}
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "chart",
+        "variant": "bar",
+        "title": "Spending by Category",
+        "data": [
+          {"label": "Housing", "value": 1800, "color": "blue"},
+          {"label": "Food", "value": 920, "color": "orange"},
+          {"label": "Transport", "value": 540, "color": "purple"},
+          {"label": "Shopping", "value": 680, "color": "pink"},
+          {"label": "Health", "value": 290, "color": "green"},
+          {"label": "Other", "value": 1000, "color": "gray"}
+        ]
+      }
+    ]
+  },
+  "spoken_summary": "In January you earned $8,450, spent $5,230, and saved $3,220 toward your vacation fund."
+}

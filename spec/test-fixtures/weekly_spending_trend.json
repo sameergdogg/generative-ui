@@ -1,0 +1,103 @@
+{
+  "title": "This Week's Spending",
+  "layout": {
+    "type": "vstack",
+    "spacing": 14,
+    "alignment": "leading",
+    "children": [
+      {
+        "type": "hstack",
+        "spacing": 10,
+        "children": [
+          {"type": "stat", "label": "This Week", "value": "$612", "color": "blue", "size": "large", "icon": "calendar"},
+          {"type": "stat", "label": "Daily Avg", "value": "$87", "color": "purple", "size": "large", "icon": "clock"}
+        ]
+      },
+      {
+        "type": "chart",
+        "variant": "line",
+        "title": "Daily Spending",
+        "data": [
+          {"label": "Mon", "value": 45.20, "color": "blue"},
+          {"label": "Tue", "value": 132.50, "color": "blue"},
+          {"label": "Wed", "value": 28.00, "color": "blue"},
+          {"label": "Thu", "value": 215.80, "color": "red"},
+          {"label": "Fri", "value": 89.30, "color": "blue"},
+          {"label": "Sat", "value": 67.40, "color": "blue"},
+          {"label": "Sun", "value": 33.80, "color": "blue"}
+        ]
+      },
+      {"type": "divider"},
+      {
+        "type": "text",
+        "content": "Notable Transactions",
+        "style": "headline",
+        "weight": "semibold"
+      },
+      {
+        "type": "list",
+        "items": [
+          {
+            "type": "hstack",
+            "children": [
+              {"type": "image", "system_name": "fuelpump.fill", "color": "blue"},
+              {
+                "type": "vstack",
+                "spacing": 2,
+                "alignment": "leading",
+                "children": [
+                  {"type": "text", "content": "Shell Gas Station", "style": "body", "weight": "medium"},
+                  {"type": "text", "content": "Thursday", "style": "caption", "color": "secondary"}
+                ]
+              },
+              {"type": "spacer"},
+              {"type": "text", "content": "$68.40", "style": "body", "weight": "semibold"}
+            ]
+          },
+          {
+            "type": "hstack",
+            "children": [
+              {"type": "image", "system_name": "fork.knife", "color": "orange"},
+              {
+                "type": "vstack",
+                "spacing": 2,
+                "alignment": "leading",
+                "children": [
+                  {"type": "text", "content": "The Cheesecake Factory", "style": "body", "weight": "medium"},
+                  {"type": "text", "content": "Thursday", "style": "caption", "color": "secondary"}
+                ]
+              },
+              {"type": "spacer"},
+              {"type": "text", "content": "$94.50", "style": "body", "weight": "semibold"}
+            ]
+          },
+          {
+            "type": "hstack",
+            "children": [
+              {"type": "image", "system_name": "cart.fill", "color": "green"},
+              {
+                "type": "vstack",
+                "spacing": 2,
+                "alignment": "leading",
+                "children": [
+                  {"type": "text", "content": "Whole Foods Market", "style": "body", "weight": "medium"},
+                  {"type": "text", "content": "Tuesday", "style": "caption", "color": "secondary"}
+                ]
+              },
+              {"type": "spacer"},
+              {"type": "text", "content": "$86.20", "style": "body", "weight": "semibold"}
+            ]
+          }
+        ]
+      },
+      {
+        "type": "hstack",
+        "children": [
+          {"type": "badge", "text": "Thu was highest", "color": "red"},
+          {"type": "badge", "text": "Wed was lowest", "color": "green"}
+        ]
+      }
+    ]
+  },
+  "spoken_summary": "You spent $612 this week with a daily average of $87. Thursday was your highest spending day at $215.80."
+}

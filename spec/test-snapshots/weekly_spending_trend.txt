@@ -1,0 +1,39 @@
+VStack(spacing=14.0, align=leading) [children=6]
+  HStack(spacing=10.0, align=center, fillsWidth=true) [children=2]
+    Stat(label="This Week", value="$612", color=blue, size=large, icon=calendar, fillsWidth=true, weighted=true)
+    Stat(label="Daily Avg", value="$87", color=purple, size=large, icon=clock, fillsWidth=true, weighted=true)
+  Chart(variant=line, title=Daily Spending) [dataPoints=7]
+    DataPoint(label="Mon", value=45.2, color=blue)
+    DataPoint(label="Tue", value=132.5, color=blue)
+    DataPoint(label="Wed", value=28.0, color=blue)
+    DataPoint(label="Thu", value=215.8, color=red)
+    DataPoint(label="Fri", value=89.3, color=blue)
+    DataPoint(label="Sat", value=67.4, color=blue)
+    DataPoint(label="Sun", value=33.8, color=blue)
+  Divider
+  Text(content="Notable Transactions", style=headline, color=default, weight=semibold)
+  List [items=3]
+    HStack(spacing=8.0, align=center, fillsWidth=true) [children=4]
+      Image(name="fuelpump.fill", color=blue, size=default)
+      VStack(spacing=2.0, align=leading) [children=2]
+        Text(content="Shell Gas Station", style=body, color=default, weight=medium)
+        Text(content="Thursday", style=caption, color=secondary, weight=regular)
+      Spacer(weighted=true)
+      Text(content="$68.40", style=body, color=default, weight=semibold)
+    HStack(spacing=8.0, align=center, fillsWidth=true) [children=4]
+      Image(name="fork.knife", color=orange, size=default)
+      VStack(spacing=2.0, align=leading) [children=2]
+        Text(content="The Cheesecake Factory", style=body, color=default, weight=medium)
+        Text(content="Thursday", style=caption, color=secondary, weight=regular)
+      Spacer(weighted=true)
+      Text(content="$94.50", style=body, color=default, weight=semibold)
+    HStack(spacing=8.0, align=center, fillsWidth=true) [children=4]
+      Image(name="cart.fill", color=green, size=default)
+      VStack(spacing=2.0, align=leading) [children=2]
+        Text(content="Whole Foods Market", style=body, color=default, weight=medium)
+        Text(content="Tuesday", style=caption, color=secondary, weight=regular)
+      Spacer(weighted=true)
+      Text(content="$86.20", style=body, color=default, weight=semibold)
+  HStack(spacing=8.0, align=center, fillsWidth=true) [children=2]
+    Badge(text="Thu was highest", color=red)
+    Badge(text="Wed was lowest", color=green)

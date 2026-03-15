@@ -1,0 +1,8 @@
+{
+  "type": "stat",
+  "label": "Total Spent",
+  "value": "$491",
+  "color": "red",
+  "size": "large",
+  "icon": "dollarsign.circle"
+}
